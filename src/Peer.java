@@ -51,10 +51,7 @@ public class Peer implements Runnable {
     }
 
     public static void main(String[] args) {
-        boolean isClient = false;
-        if(args.length > 0 && args[0].equals("client")) {
-            isClient = true;
-        }
+        boolean isClient = args.length > 0 && args[0].equals("client");
         Peer clientServer = new Peer(isClient);
         clientServer.run();
     }
