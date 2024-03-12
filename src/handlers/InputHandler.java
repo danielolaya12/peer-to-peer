@@ -9,7 +9,6 @@ import java.net.Socket;
 
 public class InputHandler implements Runnable {
     private Socket serverSocket;
-
     public InputHandler(Socket serverSocket) {
         this.serverSocket = serverSocket;
     }
@@ -21,6 +20,7 @@ public class InputHandler implements Runnable {
             BufferedReader consoleIn = new BufferedReader(new InputStreamReader(System.in));
             String userInput;
             while ((userInput = consoleIn.readLine()) != null) {
+                System.out.print("Message: ");
                 out.println(userInput);
             }
             // Close resources

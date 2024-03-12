@@ -9,31 +9,17 @@ import handlers.InputHandler;
 public class Peer implements Runnable {
     private ArrayList<ConnectionHandler> connections;
     private ServerSocket server;
-    private boolean isServer;
+    private boolean isClient;
     private ExecutorService pool;
 
-    public Peer(boolean isServer) {
+    public Peer(boolean isClient) {
         connections = new ArrayList<>();
-        this.isServer = isServer;
+        this.isClient = isClient;
     }
 
     @Override
     public void run() {
-        if (isServer) {
-            // Server logic
-            try {
-                server = new ServerSocket(9999);
-                pool = Executors.newCachedThreadPool();
-                while (true) {
-                    Socket clientSocket = server.accept();
-                    ConnectionHandler handler = new ConnectionHandler(clientSocket);
-                    connections.add(handler);
-                    pool.execute(handler);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
+        if (isClient) {
             try {
                 Socket serverSocket = new Socket("127.0.0.1", 9999);
                 InputHandler inputHandler = new InputHandler(serverSocket);
@@ -46,16 +32,30 @@ public class Peer implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            // Server logic
+            try {
+                System.out.println("Running as server");
+                server = new ServerSocket(9999);
+                pool = Executors.newCachedThreadPool();
+                while (true) {
+                    Socket clientSocket = server.accept();
+                    ConnectionHandler handler = new ConnectionHandler(clientSocket);
+                    connections.add(handler);
+                    pool.execute(handler);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public static void main(String[] args) {
-        boolean isServer = false;
-        if(args.length > 0 && args[0].equals("server")) {
-            isServer = true; // Set to true if you want to run as a server
-            System.out.println("Running as server");
+        boolean isClient = false;
+        if(args.length > 0 && args[0].equals("client")) {
+            isClient = true;
         }
-        Peer clientServer = new Peer(isServer);
+        Peer clientServer = new Peer(isClient);
         clientServer.run();
     }
 }
