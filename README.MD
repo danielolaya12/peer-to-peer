@@ -5,7 +5,7 @@ README
 
 
 #### run: 
-- run peer as server: `java Peer.java server`
-- run peer as client: `java Peer.java`
+- run peer as `java Peer <host> <port>` . For example `java Peer 127.0.0.1 9999`
 
-Run peer as server first and run as many clients as needed. To exit a chat, just type exit.
+If the peer is the first instance, it will run as the server. 
+Subsequent peers that connect to this port will run as peers
