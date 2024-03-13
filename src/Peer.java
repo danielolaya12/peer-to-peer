@@ -6,8 +6,8 @@ import handlers.ConnectionHandler;
 import handlers.InputHandler;
 
 public class Peer implements Runnable {
-    private String host;
-    private int port;
+    private final String host;
+    private final int port;
 
     public Peer(String host, int port){
         this.host = host;
@@ -27,7 +27,7 @@ public class Peer implements Runnable {
             }
         }
     }
-    public void setupPeer() throws IOException {
+    private void setupPeer() throws IOException {
         Socket serverSocket = new Socket(host, port);
         InputHandler inputHandler = new InputHandler(serverSocket);
         new Thread(inputHandler).start();
@@ -37,7 +37,7 @@ public class Peer implements Runnable {
             System.out.println(serverMessage);
         }
     }
-    public void setupServer(){
+    private void setupServer(){
         try {
             System.out.println("Running as server");
             try(ServerSocket server = new ServerSocket(port);
