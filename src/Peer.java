@@ -1,23 +1,25 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import handlers.ConnectionHandler;
 import handlers.InputHandler;
 
 public class Peer implements Runnable {
-    //private final ArrayList<ConnectionHandler> connections;
-//    public Peer() {
-//        connections = new ArrayList<>();
-//    }
+    private String host;
+    private int port;
 
+    public Peer(String host, int port){
+        this.host = host;
+        this.port = port;
+    }
     @Override
     public void run() {
         try {
             setupPeer();
         } catch (IOException e) {
-            //If instance of ConnectException, it means there is no server running in port 9999
+            //If instance of ConnectException, it means there is no server running in port 9999.
+            //Therefore we need to setup the Peer as a server
             if(e instanceof java.net.ConnectException){
                 setupServer();
             } else {
@@ -26,7 +28,7 @@ public class Peer implements Runnable {
         }
     }
     public void setupPeer() throws IOException {
-        Socket serverSocket = new Socket("127.0.0.1", 9999);
+        Socket serverSocket = new Socket(host, port);
         InputHandler inputHandler = new InputHandler(serverSocket);
         new Thread(inputHandler).start();
         BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
@@ -38,12 +40,11 @@ public class Peer implements Runnable {
     public void setupServer(){
         try {
             System.out.println("Running as server");
-            try(ServerSocket server = new ServerSocket(9999);
+            try(ServerSocket server = new ServerSocket(port);
                 ExecutorService pool = Executors.newCachedThreadPool()){
                 while (true) {
                     Socket clientSocket = server.accept();
                     ConnectionHandler handler = new ConnectionHandler(clientSocket);
-                    //connections.add(handler);
                     pool.execute(handler);
                 }
             }
@@ -52,7 +53,14 @@ public class Peer implements Runnable {
         }
     }
     public static void main(String[] args) {
-        Peer clientServer = new Peer();
+        if(args.length < 2){
+            System.out.println("IP host and port are needed. " +
+                    "\nRun as java Peer <host> <port>");
+            System.exit(1);
+        }
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
+        Peer clientServer = new Peer(host, port);
         clientServer.run();
     }
 }

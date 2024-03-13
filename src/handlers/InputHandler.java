@@ -1,4 +1,3 @@
-// handlers/InputHandler.java
 package handlers;
 
 import java.io.BufferedReader;
@@ -8,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class InputHandler implements Runnable {
-    private Socket serverSocket;
+    private final Socket serverSocket;
     public InputHandler(Socket serverSocket) {
         this.serverSocket = serverSocket;
     }
@@ -22,13 +21,14 @@ public class InputHandler implements Runnable {
             while ((userInput = consoleIn.readLine()) != null) {
                 System.out.print("Message: ");
                 out.println(userInput);
+                if (userInput.equals("exit")) break;
             }
-            // Close resources
+            System.out.println("Exiting chat");
             out.close();
             consoleIn.close();
             serverSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }
